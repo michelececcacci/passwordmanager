@@ -18,11 +18,14 @@ def main():
             #1st input lets user login, then tests if login is correct and lets user access his passwords.
         elif first_input == '2':
             username_and_password()
+            print("Looks like you want to register")
+            userdata = username_and_password()
             try:
                 open('passwords.json', 'r')
             except:
                 open('passwords.json', 'w')
                 new_file = {"users" :{}}
+            #check if the username is already used 
             #lets user input his password and username
         elif first_input == '3': #just exit if user wants to quit program.
             sys.exit()
