@@ -71,17 +71,20 @@ def password_manager(user):
     try:
         wb = openpyxl.load_workbook(f'{user}passwords.xlsx')
         sheet1 = wb['Sheet1']
-        user_choiche = input('please press 1 to manage the saved passwords, or 2 to register a new one, or 3 to delete a password:>')
+        user_choiche = input('please press 1 to get a saved password, or 2 to register a new one, or 3 to delete a password:>')
         if user_choiche == '1':
+            print("these are all the websites you are registered on")
+            for i in range(1, int(sheet1.max_row)):
+                print(sheet1.cell(row=i, column=1).value)
             sitename = input('insert the website that you want your password copied from >') 
             for i in range(1, int(sheet1.max_row)+1):
                 if sheet1.cell(row=i, column=1).value == sitename:
                     pyperclip.copy(sheet1.cell(row=i, column=2).value)
                     print('password copied in clipboard')   
                     sys.exit()                             
+            print("password not saved currently")
         elif user_choiche == '2':
-            sheet1=wb['Sheet1']
-            website_input = input('please insert  the website you would like to register on')
+            website_input = input('please insert  the website you would like to register your password from >')
             for i in range(2, int(sheet1.max_row+1)):
                 if sheet1.cell(row=i, column=1).value == website_input:
                     print(f'password for website already registered, copying it to clipboard: {sheet1.cell(row=i, column=1).value}')
@@ -89,17 +92,21 @@ def password_manager(user):
                     sys.exit()
                 else:
                     print('password not registered') #todo this section of code doesn't let the user register a password
+                    sheet1.cell(row=i, column=1).value = website_input
+                    website_password =  input(f"insert the password for {website_input}") 
+                    sheet1.cell(row=i, column=2).value = website_password 
+                    wb.save(f'{user}passwords.xlsx') 
+                    sys.exit()
         elif user_choiche == '3':
-            sheet1=wb['Sheet1']
-            clear_website = input('please insert the website to clear password for')
+            clear_website = input('please insert the website to clear password for >')
+            password_manager(user)
             for i in range(2, int(sheet1.max_row)+1):
                 if (sheet1.cell(row=i, column=1).value) == clear_website:
                     sheet1.cell(row=i, column=1, value = '')
                     sheet1.cell(row=i, column=2, value = '')
                     print('passwords cleared correctly')
                 sys.exit()
-                     #todo this is the password registration functionality, still not complete
-        website_input = input('please input again the website you want to register on>')
+        website_input = input('please input again the website you want to register on >')
         password_input = input(f'please set a password for {website_input} > ')
         sheet1.cell(row=int(sheet1.max_row)+1, column=1, value=website_input)
         sheet1.cell(row=int(sheet1.max_row), column=2, value= password_input)
