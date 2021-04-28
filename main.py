@@ -71,11 +71,11 @@ def password_manager(user):
     try:
         wb = openpyxl.load_workbook(f'{user}passwords.xlsx')
         sheet1 = wb['Sheet1']
-        user_choiche = input('please press 1 to get a saved password, or 2 to register a new one, or 3 to delete a password:>')
+        print("these are all the websites you are registered on")
+        for i in range(1, int(sheet1.max_row)):
+            print(sheet1.cell(row=i, column=1).value)
+        user_choiche = input('please press 1 to get a saved password, or 2 to register a new one, or 3 to delete a password. If you want to change a password, first clear it and then register again:>')
         if user_choiche == '1':
-            print("these are all the websites you are registered on")
-            for i in range(1, int(sheet1.max_row)):
-                print(sheet1.cell(row=i, column=1).value)
             sitename = input('insert the website that you want your password copied from >') 
             for i in range(1, int(sheet1.max_row)+1):
                 if sheet1.cell(row=i, column=1).value == sitename:
@@ -91,7 +91,7 @@ def password_manager(user):
                     pyperclip.copy(sheet1.cell(row=i, column=2).value)
                     sys.exit()
                 else:
-                    print('password not registered') #todo this section of code doesn't let the user register a password
+                    print('password not registered') 
                     sheet1.cell(row=i, column=1).value = website_input
                     website_password =  input(f"insert the password for {website_input}") 
                     sheet1.cell(row=i, column=2).value = website_password 
@@ -99,18 +99,22 @@ def password_manager(user):
                     sys.exit()
         elif user_choiche == '3':
             clear_website = input('please insert the website to clear password for >')
-            password_manager(user)
             for i in range(2, int(sheet1.max_row)+1):
                 if (sheet1.cell(row=i, column=1).value) == clear_website:
                     sheet1.cell(row=i, column=1, value = '')
                     sheet1.cell(row=i, column=2, value = '')
                     print('passwords cleared correctly')
+                    wb.save(f'{user}passwords.xlsx')
+                else: 
+                    print(f"looks like you are not registered on: {clear_website}")
                 sys.exit()
+        else :
+            password_manager(user)
         website_input = input('please input again the website you want to register on >')
         password_input = input(f'please set a password for {website_input} > ')
         sheet1.cell(row=int(sheet1.max_row)+1, column=1, value=website_input)
         sheet1.cell(row=int(sheet1.max_row), column=2, value= password_input)
-        wb.save(f'{user}passwords.xlsx') #todo user should be able to change his passwords
+        wb.save(f'{user}passwords.xlsx') 
         sys.exit()
     except IOError:
         wb = openpyxl.Workbook()
